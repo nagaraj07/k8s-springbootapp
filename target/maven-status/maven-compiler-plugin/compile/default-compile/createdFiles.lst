@@ -1,0 +1,5 @@
+com/hbi/product/entity/Product.class
+com/hbi/product/controller/ProductController.class
+com/hbi/product/ProducetManagerApplication.class
+com/hbi/product/service/ProductService.class
+com/hbi/product/repository/ProductRepository.class

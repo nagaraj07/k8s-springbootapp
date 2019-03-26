@@ -1,0 +1,112 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: k8s-springbootapp-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/mongo
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k8s-springbootapp-pv-claim
+  labels:
+    app: k8s-springbootapp-pv-claim
+spec:  
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-springbootapp
+  labels:
+    app: k8s-springbootapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: k8s-springbootapp
+  template:
+    metadata:
+      labels:
+        app: k8s-springbootapp
+    spec:
+      containers:
+      - name: k8s-springbootapp
+        image: raj73docker/k8s-springbootapp 
+        env:
+        - name: MONGODB_HOST
+          value: mongodb
+        ports:
+        - containerPort: 2020
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-springbootapp
+  labels:
+    run: k8s-springbootapp
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: k8s-springbootapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  labels:
+    appdb: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appdb: mongodb
+  template:
+    metadata:
+      labels:
+        appdb: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: raj73docker/mongodb:latest
+        ports:
+        - containerPort: 27017
+        imagePullPolicy: Always            
+        volumeMounts:
+        - name: hostvol
+          mountPath: /data/db
+      volumes:
+      - name: hostvol
+        persistentVolumeClaim:
+          claimName: k8s-springbootapp-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    appdb: mongodb

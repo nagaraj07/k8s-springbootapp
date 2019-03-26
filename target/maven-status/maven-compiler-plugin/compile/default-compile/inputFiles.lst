@@ -1,0 +1,5 @@
+/home/ubuntu/k8s-springbootapp/src/main/java/com/hbi/product/controller/ProductController.java
+/home/ubuntu/k8s-springbootapp/src/main/java/com/hbi/product/entity/Product.java
+/home/ubuntu/k8s-springbootapp/src/main/java/com/hbi/product/service/ProductService.java
+/home/ubuntu/k8s-springbootapp/src/main/java/com/hbi/product/repository/ProductRepository.java
+/home/ubuntu/k8s-springbootapp/src/main/java/com/hbi/product/ProducetManagerApplication.java
